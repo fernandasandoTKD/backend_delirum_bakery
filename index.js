@@ -1,10 +1,17 @@
 /* Importación de express y BD */
 const express = require('express');
 const mongoose = require('mongoose');
-const port = process.env.PORT || 3200;
+const port = process.env.PORT || 3900;
+
+/* Importación de rutas */
+const userRoutes = require('./src/routes/userRoutes');
 
 /* Sinónimo para llamar a express */
 const app = express();
+
+/* Uso de rutas  */
+app.use(express.json());
+app.use("/api", userRoutes)
 
 /* Importación de libería para leer archivos .env */
 require('dotenv').config();
