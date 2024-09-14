@@ -29,6 +29,7 @@ exports.createUser = async (req, res) => {
 
 // Obtener todos los usuarios
 exports.getUsers = async (req, res) => {
+    console.log("gatito");
     try {
         const users = await User.find();
         res.status(200).json(users);
