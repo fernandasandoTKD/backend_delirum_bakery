@@ -14,7 +14,10 @@ const app = express();
 app.use(express.json());
 app.use("/api", userRoutes)
 // Rutas
-app.use('/api', routes);
+app.use('/api', routes);app.use('/api/categories', productCategoryRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/cart', shoppingCarRoutes);
+
 /* Importación de libería para leer archivos .env */
 require('dotenv').config();
 
