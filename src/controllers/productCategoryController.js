@@ -1,4 +1,4 @@
-const ProductCategory = require('../models/ProductCategory'); // Asegúrate de que la ruta sea correcta
+const ProductCategory = require('../models/ProductCategory');
 
 // Obtener todas las categorías
 const getAllCategories = async (req, res) => {
@@ -21,5 +21,4 @@ const createCategory = async (req, res) => {
     }
 };
 
-// Exportar las funciones
 module.exports = { getAllCategories, createCategory };

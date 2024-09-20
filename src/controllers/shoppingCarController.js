@@ -1,4 +1,4 @@
-const ShoppingCart = require('../models/ShoppingCart'); // Asegúrate de que la ruta sea correcta
+const ShoppingCart = require('../models/ShoppingCart');
 
 // Obtener el carrito de compras del usuario
 const getCart = async (req, res) => {
@@ -25,5 +25,4 @@ const addToCart = async (req, res) => {
     }
 };
 
-// Exportar las funciones
 module.exports = { getCart, addToCart };

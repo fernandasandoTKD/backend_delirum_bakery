@@ -1,10 +1,13 @@
-const Product = require('../models/Product'); // Asegúrate de que la ruta sea correcta
+const Product = require('../models/Product');
 
 // Obtener todos los productos
-const getAllProducts = async (req, res) => {
+const getProduct = async (req, res) => {
     try {
-        const products = await Product.find().populate('category'); // Asumiendo que hay una relación con categorías
-        res.json(products);
+        const product = await Product.findById(req.params.id).populate('category');
+        if (!product) {
+            return res.status(404).send('Product not found');
+        }
+        res.json(product);
     } catch (error) {
         res.status(500).send('Server Error');
     }
@@ -21,5 +24,4 @@ const createProduct = async (req, res) => {
     }
 };
 
-// Exportar las funciones
-module.exports = { getAllProducts, createProduct };
+module.exports = { getProduct, createProduct };

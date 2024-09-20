@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const shoppingCartSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', // Asegúrate de que el modelo de usuario esté definido
+        ref: 'User',
         required: true,
     },
     products: [{
