@@ -16,12 +16,34 @@ const getProduct = async (req, res) => {
 // Crear un nuevo producto
 const createProduct = async (req, res) => {
     try {
+        // Validar que la solicitud contiene la información requerida
+        if (!req.body.name || !req.body.price) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Faltan campos obligatorios como nombre o precio.'
+            });
+        }
+
+        // Crear un nuevo producto con los datos del cuerpo de la solicitud
         const newProduct = new Product(req.body);
         await newProduct.save();
-        res.status(201).json(newProduct);
+
+        // Respuesta exitosa
+        res.status(201).json({
+            status: 'success',
+            message: 'Producto creado exitosamente.',
+            data: newProduct
+        });
+
     } catch (error) {
-        res.status(400).send('Error creating product');
+        // Manejo de errores
+        res.status(500).json({
+            status: 'error',
+            message: 'Error al crear el producto',
+            error: error.message // Devuelve el mensaje de error para más contexto (en entornos de desarrollo)
+        });
     }
 };
+
 
 module.exports = { getProduct, createProduct };

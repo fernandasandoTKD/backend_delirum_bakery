@@ -3,7 +3,7 @@ const { getAllCategories, createCategory } = require('../controllers/productCate
 
 const router = express.Router();
 
-router.get('/meu', getAllCategories);
+router.get('/menu', getAllCategories);
 router.post('/new', createCategory);
 
 module.exports = router;
