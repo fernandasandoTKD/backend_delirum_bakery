@@ -1,8 +1,11 @@
 const User = require('../models/user');
+const  bcrypt =require('bcrypt');
 
 // Crear un nuevo usuario
 exports.createUser = async (req, res) => {
     try {
+
+        const passHast = await bcrypt.hash(password, 10)
         const { username, email, password, role } = req.body;
 
         // Verificar si el usuario ya existe
@@ -15,7 +18,7 @@ exports.createUser = async (req, res) => {
         const newUser = new User({
             username,
             email,
-            password, // En producción, asegúrate de hashear la contraseña antes de guardarla
+            password: passHast,
             role
         });
 
@@ -85,3 +88,50 @@ exports.deleteUser = async (req, res) => {
         res.status(500).json({ message: 'Error al eliminar el usuario', error: error.message });
     }
 };
+
+
+/* Users profile */
+exports.profile = async (req, res) => {
+    try {
+        // Obtener el ID del usuario desde los parámetros de la URL
+        const userId = req.params.id;
+        console.log(userId)
+        console.log(req.userId)
+
+        // Verificar si el ID del usuario autenticado está disponible
+        if (!req.userId ) {
+            return res.status(401).send({
+                status: "success",
+                message: "Usuario no autenticado"
+            });
+        }
+
+        // Buscar al usuario en la BD y excluimos los datos que no queremos mostrar
+        const userProfile = await User.findById(userId).select('-password -role -email -__v');
+        console.log(userProfile)
+        // Verificar si el usuario no existe
+        if (!userProfile) {
+            return res.status(404).send({
+                status: "success",
+                message: "Usuario no encontrado"
+            });
+        }
+
+        // Información del seguimiento
+        /* const followInfo = await followThisUser(req.user.userId, userId); */
+
+        // Devolver la información del perfil del usuario
+        return res.status(200).json({
+            status: "success",
+            user: userProfile,
+           
+        });
+
+    } catch (error) {
+        console.log("Error al obtener el perfil del usuario:", error)
+        return res.status(500).send({
+            status: "error",
+            message: "Error al obtener el perfil del usuario"
+        });
+    }
+}
