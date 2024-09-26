@@ -13,7 +13,7 @@ const shoppingCartSchema = new mongoose.Schema({
             required: true,
         },
         quantity: {
-            type: int,
+            type: Number,
             required: true,
             default: 1,
         },

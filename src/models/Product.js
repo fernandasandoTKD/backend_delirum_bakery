@@ -10,7 +10,7 @@ const productSchema = new mongoose.Schema({
         required: true,
     },
     price: {
-        type: int,
+        type: Number,
         required: true,
     },
     category: {
@@ -19,7 +19,7 @@ const productSchema = new mongoose.Schema({
         required: true,
     },
     stock: {
-        type: int,
+        type: Number,
         default: 0,
     },
 }, { timestamps: true });
