@@ -30,6 +30,6 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-// Crear un modelo basado en el esquema
-const User = mongoose.model('User', userSchema);
-module.exports= User;
+// Verifica si el modelo ya está definido antes de crearlo
+const User = mongoose.models.User || mongoose.model('User', userSchema);
+module.exports = User;

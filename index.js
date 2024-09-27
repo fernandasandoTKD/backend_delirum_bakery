@@ -7,6 +7,9 @@ const port = process.env.PORT || 3900;
 /* Importación de rutas */
 const userRoutes = require('./src/routes/userRoutes');
 const routes = require('./src/routes/routes');
+const productCategoryRoutes = require('./src/routes/categories');
+const productRoutes = require('./src/routes/products');
+const shoppingCarRoutes = require('./src/routes/cart');
 
 /* Sinónimo para llamar a express */
 const app = express();
