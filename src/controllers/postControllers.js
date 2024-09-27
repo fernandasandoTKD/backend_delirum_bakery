@@ -3,7 +3,7 @@ const author = require ("../models/author")
 const path = require ('path')
 const fs = require ('fs')
 const {v4: uuid} = require('uuid')
-const HttpError = require ( '../models/errorModel')
+const HttpError = require ( '../models/error')
 
 
 
@@ -20,7 +20,7 @@ const createPost = async (req,res, next ) =>{
         const {thumbnail} = req.files;
         //chech the  file size 
         if (thumbnail.size > 2000000){
-            return next ( new HttpError ("Thumbnail too big. File shoudl be less than 2mb")
+            return next ( new HttpError ("Thumbnail too big. File shoudl be less than 2mb"))
         }
         let fileName = thumbnail. name;
         let splittedFilename = fileName. split ('.')
@@ -34,7 +34,7 @@ const createPost = async (req,res, next ) =>{
                     return next(new HttpError("Post couldn't be create." , 422))
                 }
                 //find author and increase post count by 1
-                const currentAuthor = await = Author.findById(req.author.id);
+                const currentAuthor = await  Author.findById(req.author.id);
                 const authorPostCount = currentAuthor.posts +1;
                 await Author.findBydIDAndUpdate(req.author.id,{posts: authorPostCount})
 
@@ -51,6 +51,7 @@ const createPost = async (req,res, next ) =>{
 //Unprotected 
 
 const getPosts= async (req,res, next ) =>{
+    console.log("gatitomiau")
     try {
         const posts = await Post.find().sort({updateAt: -1})
         res.status (200).json(posts)
@@ -91,20 +92,18 @@ const getCatPosts = async (req,res, next ) => {
     }
 }
 
-// Get Author/User Post
-//Get : api/posts/:authors/;id
-//Unprotected 
-
-const getCatPosts = async (req,res, next ) =>{
+// get Author/ post
+const getAuthorPost = async (req, res, next) => {
     try {
-        const {id} =req.params;
-        const posts = await Post.find({creator: id}).sort ({createdAt: -1})
-        res.status (200).json(posts)
-
-    }catch (error) {
-        return next (new HttpError(error))
+        const {id} =req.params; 
+        const posts = await Post.find ({creator: id}).sort({createAt: -1})
+        res.status (200).json (posts)
+        
+    } catch (error) {
+        return next(new HttpError(error))
     }
 }
+
 
 // Edit Post
 //Patch : api/posts/:id
@@ -117,7 +116,7 @@ const editPost = async (req,res, next ) =>{
         let updatedPost;
         const postId =req.params.id;
         let {title, category, description} =req.body;
-    }
+   
         
         if (!title || !category || description.length < 12) {
             return next (new HttpError ("fill in all fields", 422))
@@ -161,7 +160,7 @@ const editPost = async (req,res, next ) =>{
             return next (new HttpError("Couldn't update post.", 400))
         }
         res.status(200).json(updatedPost)
-
+    }}
      } catch (error) {
         return next (new HttpError(error))
     }

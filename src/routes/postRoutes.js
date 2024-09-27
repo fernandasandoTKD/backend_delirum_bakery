@@ -8,8 +8,8 @@ router.post('/', authMiddleware, createPost)
 router.get('/', getPosts)
 router.get('/:id', getPost)
 router.get('/:categories/:category', getCatPosts)
-router.get('/authors/:id', getAuthorPosts)
+router.get('/authors/:id', getAuthorPost)
 router.patch('/:id', authMiddleware, editPost)
 router.delete('/:id', authMiddleware, deletePost)
 
-module.exports = router 
+module.exports = router;

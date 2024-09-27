@@ -11,10 +11,12 @@ const HttpError =require ("../models/error")
 // POST : api/author/register
 // UNPROTECTED 
 const registerAuthor = async (req, res, next ) => {
+    
     try {
         const {name, email, password, password2} = req.body;
         if (!name || !email || !password) {
-            return next ( new HttpError (" Fill in all fields" , 422))
+            
+            return next ( new HttpError ("Fill in all fields" , 422))
         }
         const newEmail = email.toLowerCase ()
 
@@ -35,6 +37,7 @@ const registerAuthor = async (req, res, next ) => {
         const newAuthor = await Author.create ({name, email: newEmail, password: hashedPass})
         res.status (201).json(`New author ${newAuthor.email} registered`)
     } catch (error) {
+        console.log(error)
         return next (new HttpError(" Author registration failed." , 422))
     }
 }
@@ -43,29 +46,34 @@ const registerAuthor = async (req, res, next ) => {
 // POST : api/author/login
 // UNPROTECTED 
 const loginAuthor = async (req, res, next ) => {
+    
     try {
         const {email, password} =req.body;
         if (!email || !password) {
-            return next (new HttpError ("fill in all fields." 422))
+            return next (new HttpError ("fill in all fields.", 422))
         }
         const newEmail =email.toLowerCase();
+       
+        
         const author = await Author.findOne ({email: newEmail})
+        
         if (!author) {
             return next (new HttpError("Invalid credentials .", 422))
         
         }
         const comparePass =await bcrypt.compare(password, author.password)
+        
         if (!comparePass) {
             return next( new HttpError ("invalid credentiales ." ,422))
         }
 
         const {id: id, name} = author;
-        const token = jwt.sign ({id, name}, ProcessingInstruction.env.JWT_SECRET, {})
-
+        const token = jwt.sign ({id, name}, process.env.JWT_SECRET, {})
+        
         res.status (200).json({token, id, name})
 
     } catch (error) {
-        return next (new HttpError ("Login failed. Please check your credentiales." 422))
+        return next (new HttpError ("Login failed. Please check your credentiales.", 422))
     }
 }
 
@@ -120,11 +128,9 @@ const changeAvatar = async (req, res, next ) => {
                 return next(new HttpError(err))
             }
 
-            c
-
-            const updatedAvatar = await Author,findByIdAndUpdate(req.author.id, {avatar: newFilename}, {new:true} )
+            const updatedAvatar = await Author.findByIdAndUpdate(req.author.id, {avatar: newFilename}, {new:true} )
             if (!updatedAvatar) {
-                return next (new HttpError ("Avatar couldn't be changed." , 422)
+                return next (new HttpError ("Avatar couldn't be changed." , 422))
             }
             res.status(200).json(updatedAvatar)
         })

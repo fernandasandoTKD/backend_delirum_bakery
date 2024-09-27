@@ -3,14 +3,19 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors'); // Importa cors
 const upload = require ('express-fileupload')
-const port = process.env.PORT || 3900;
+
 
 /* Importación de rutas */
 const userRoutes = require('./src/routes/userRoutes');
+const authorRoutes = require( './src/routes/authorRoutes');
+
 const routes = require('./src/routes/routes');
+require('dotenv').config();
 //const {notFound, errorHandler} =require ('./middleware/errorMiddleware')
 /* Sinónimo para llamar a express */
 const app = express();
+/* Importación de librería para leer archivos .env */
+const port = process.env.PORT || 3900;
 
 /* Configuración de CORS */
 app.use(cors({
@@ -27,13 +32,16 @@ app.use('/uploads', express.static(__dirname + '/uploads'))
 //app.use (notFound)
 //app.use (errorHandler)
 /* Importación de librería para leer archivos .env */
-require('dotenv').config();
 
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json({extended: true}))
+app.use(cors({credentials:true, origin: "http://localhost:3900"}))
 /* Habilitar puesto de escucha */
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
-
+console.log(process.env.MONGO_URI)
 /* Conexión a MongoDB */
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
