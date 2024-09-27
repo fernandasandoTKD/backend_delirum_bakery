@@ -4,19 +4,32 @@ const Product = require('../models/Product');
 // Obtener el carrito de un comprador específico
 exports.getCart = async (req, res) => {
     try {
-        const cart = await Cart.findOne({ buyer: req.params.buyerId }).populate('items.product');
+        const buyerId = req.user?.id || null; // Comprueba si hay un usuario autenticado
+        let cart;
+
+        if (buyerId) {
+            // Si hay un usuario autenticado, busca el carrito del comprador
+            cart = await Cart.findOne({ buyer: buyerId }).populate('items.product');
+        } else {
+            // Si no hay usuario autenticado, intenta encontrar un carrito sin propietario
+            cart = await Cart.findOne({ sessionId: req.sessionID }).populate('items.product');
+        }
+
         if (!cart) {
             return res.status(404).json({ message: 'Carrito no encontrado' });
         }
+
         res.status(200).json(cart);
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener el carrito', error });
     }
 };
 
+
 // Añadir un producto al carrito
 exports.addToCart = async (req, res) => {
-    const { buyerId, productId, quantity } = req.body;
+    const { productId, quantity } = req.body;
+    const buyerId = req.user?.id || null; // Comprueba si hay un usuario autenticado
 
     try {
         // Verificar si el producto existe
@@ -25,24 +38,29 @@ exports.addToCart = async (req, res) => {
             return res.status(404).json({ message: 'Producto no encontrado' });
         }
 
-        // Buscar si ya existe un carrito para el comprador
-        let cart = await Cart.findOne({ buyer: buyerId });
+        // Buscar si ya existe un carrito para el comprador o un carrito sin propietario
+        let cart;
+
+        if (buyerId) {
+            cart = await Cart.findOne({ buyer: buyerId });
+        } else {
+            cart = await Cart.findOne({ sessionId: req.sessionID });
+        }
 
         if (!cart) {
-            // Si no existe, crear un nuevo carrito
+            // Si no existe carrito, crearlo
             cart = new Cart({
-                buyer: buyerId,
+                buyer: buyerId || null,
+                sessionId: req.sessionID, // Asociar carrito a una sesión si es usuario no autenticado
                 items: [{ product: productId, quantity }]
             });
         } else {
-            // Si existe, comprobar si el producto ya está en el carrito
+            // Si existe carrito, actualizar o agregar el producto
             const existingProductIndex = cart.items.findIndex(item => item.product.toString() === productId);
 
             if (existingProductIndex > -1) {
-                // Si el producto ya está en el carrito, actualizar la cantidad
                 cart.items[existingProductIndex].quantity += quantity;
             } else {
-                // Si no está en el carrito, agregar el producto
                 cart.items.push({ product: productId, quantity });
             }
         }
@@ -54,18 +72,27 @@ exports.addToCart = async (req, res) => {
     }
 };
 
+
 // Eliminar un producto del carrito
 exports.removeFromCart = async (req, res) => {
-    const { buyerId, productId } = req.body;
+    const { productId } = req.body;
+    const buyerId = req.user?.id || null; // Verifica si hay un usuario autenticado
 
     try {
-        const cart = await Cart.findOne({ buyer: buyerId });
+        // Buscar el carrito según el estado del usuario
+        let cart;
+        if (buyerId) {
+            cart = await Cart.findOne({ userId: buyerId });
+        } else {
+            cart = await Cart.findOne({ sessionId: req.sessionID });
+        }
+
         if (!cart) {
             return res.status(404).json({ message: 'Carrito no encontrado' });
         }
 
         // Filtrar el producto que se desea eliminar del carrito
-        cart.items = cart.items.filter(item => item.product.toString() !== productId);
+        cart.products = cart.products.filter(item => item.productId.toString() !== productId);
 
         await cart.save();
         res.status(200).json({ message: 'Producto eliminado del carrito', cart });
@@ -74,25 +101,30 @@ exports.removeFromCart = async (req, res) => {
     }
 };
 
+
 // Vaciar el carrito
 exports.clearCart = async (req, res) => {
-    const { buyerId } = req.body;
+    const buyerId = req.user?.id || null; // Verifica si hay un usuario autenticado
 
     try {
-        const cart = await Cart.findOne({ buyer: buyerId });
+        // Buscar el carrito del usuario o invitado
+        let cart;
+        if (buyerId) {
+            cart = await Cart.findOne({ userId: buyerId });
+        } else {
+            cart = await Cart.findOne({ sessionId: req.sessionID });
+        }
+
         if (!cart) {
             return res.status(404).json({ message: 'Carrito no encontrado' });
         }
 
-        cart.items = []; // Vaciar el carrito
+        // Vaciar el carrito
+        cart.products = [];
         await cart.save();
+
         res.status(200).json({ message: 'Carrito vaciado', cart });
     } catch (error) {
         res.status(500).json({ message: 'Error al vaciar el carrito', error });
     }
 };
-
-
-
-
-

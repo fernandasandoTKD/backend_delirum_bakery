@@ -4,7 +4,7 @@ const shoppingCartSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
+        required: false,
     },
     products: [{
         productId: {
@@ -20,4 +20,4 @@ const shoppingCartSchema = new mongoose.Schema({
     }],
 }, { timestamps: true });
 
-module.exports = mongoose.model('ShoppingCart', shoppingCartSchema);
+module.exports = mongoose.model('ShoppingCart', shoppingCartSchema)
