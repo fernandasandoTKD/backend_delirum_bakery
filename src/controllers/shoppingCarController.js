@@ -1,4 +1,4 @@
-const Cart = require('../models/SHoppingCart');
+const Cart = require('../models/ShoppingCart');
 const Product = require('../models/Product');
 
 // Obtener el carrito de un comprador específico
@@ -42,8 +42,10 @@ exports.addToCart = async (req, res) => {
         let cart;
 
         if (buyerId) {
+            // Usuario autenticado
             cart = await Cart.findOne({ buyer: buyerId });
         } else {
+            // Usuario invitado
             cart = await Cart.findOne({ sessionId: req.sessionID });
         }
 
@@ -52,7 +54,7 @@ exports.addToCart = async (req, res) => {
             cart = new Cart({
                 buyer: buyerId || null,
                 sessionId: req.sessionID, // Asociar carrito a una sesión si es usuario no autenticado
-                items: [{ product: productId, quantity }]
+                items: [{ product: Id, quantity }]
             });
         } else {
             // Si existe carrito, actualizar o agregar el producto
@@ -73,6 +75,7 @@ exports.addToCart = async (req, res) => {
 };
 
 
+
 // Eliminar un producto del carrito
 exports.removeFromCart = async (req, res) => {
     const { productId } = req.body;
@@ -82,7 +85,7 @@ exports.removeFromCart = async (req, res) => {
         // Buscar el carrito según el estado del usuario
         let cart;
         if (buyerId) {
-            cart = await Cart.findOne({ userId: buyerId });
+            cart = await Cart.findOne({ buyer: buyerId });
         } else {
             cart = await Cart.findOne({ sessionId: req.sessionID });
         }
@@ -92,7 +95,7 @@ exports.removeFromCart = async (req, res) => {
         }
 
         // Filtrar el producto que se desea eliminar del carrito
-        cart.products = cart.products.filter(item => item.productId.toString() !== productId);
+        cart.items = cart.items.filter(item => item.product.toString() !== productId);
 
         await cart.save();
         res.status(200).json({ message: 'Producto eliminado del carrito', cart });
@@ -110,7 +113,7 @@ exports.clearCart = async (req, res) => {
         // Buscar el carrito del usuario o invitado
         let cart;
         if (buyerId) {
-            cart = await Cart.findOne({ userId: buyerId });
+            cart = await Cart.findOne({ buyer: buyerId });
         } else {
             cart = await Cart.findOne({ sessionId: req.sessionID });
         }
@@ -120,7 +123,7 @@ exports.clearCart = async (req, res) => {
         }
 
         // Vaciar el carrito
-        cart.products = [];
+        cart.items = [];
         await cart.save();
 
         res.status(200).json({ message: 'Carrito vaciado', cart });
