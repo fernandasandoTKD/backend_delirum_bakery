@@ -1,14 +1,33 @@
 const ProductCategory = require('../models/ProductCategory');
 
-// Obtener todas las categorías
-const getAllCategories = async (req, res) => {
+// Listar productos paginados o filtrados por categoría
+const getAllCategories  = async (req, res) => {
+    const { page = 1, limit = 10, categoryId } = req.query; // Obtener página, límite y categoryId desde la consulta
+
     try {
-        const categories = await ProductCategory.find();
-        res.json(categories);
+        // Crear un filtro si se proporciona un categoryId
+        const filter = categoryId ? { category: categoryId } : {};
+
+        const products = await Product.find(filter)
+            .populate('category')
+            .skip((page - 1) * limit) // Saltar productos de las páginas anteriores
+            .limit(parseInt(limit)); // Limitar a la cantidad deseada
+
+        // Contar total de productos para la paginación
+        const totalProducts = await Product.countDocuments(filter); // Contar productos según el filtro
+
+        res.json({
+            status: 'success',
+            total: totalProducts,
+            page: parseInt(page),
+            limit: parseInt(limit),
+            data: products
+        });
     } catch (error) {
         res.status(500).send('Server Error');
     }
 };
+
 
 // Crear una nueva categoría
 const createCategory = async (req, res) => {
