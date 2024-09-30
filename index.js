@@ -1,6 +1,7 @@
 /* Importación de express, mongoose, y cors */
 const express = require('express');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 const cors = require('cors'); // Importa cors
 const upload = require ('express-fileupload')
 
@@ -9,12 +10,19 @@ const upload = require ('express-fileupload')
 const userRoutes = require('./src/routes/userRoutes');
 const authorRoutes = require( './src/routes/authorRoutes');
 const postRoutes = require ('./src/routes/postRoutes');
+const routes = require('./src/routes/routes');
+const productCategoryRoutes = require('./src/routes/categories');
+const productRoutes = require('./src/routes/products');
+const shoppingCarRoutes = require('./src/routes/cart');
 
 const routes = require('./src/routes/routes');
 require('dotenv').config();
 //const {notFound, errorHandler} =require ('./middleware/errorMiddleware')
 /* Sinónimo para llamar a express */
 const app = express();
+// Middleware para manejar cookies
+app.use(cookieParser());  // Usar cookie-parser
+
 
 app.use(upload());
 /* Importación de librería para leer archivos .env */
