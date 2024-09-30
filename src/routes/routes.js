@@ -12,11 +12,12 @@ const cart = require('./cart');
 
 
 // Definir las rutas para la API
-router.use('/auth', authRoutes);     
-router.use('/users', usersRoutes); 
-/* router.use('/categories', categories);
+router.use('/auth', authRoutes);
+router.use('/users', usersRoutes);
+router.use('/categories', categories);
 router.use('/products', products);
-router.use('/cart', cart);  */        
+router.use('/cart', cart);
+router.use('/classRoutes', classRoutes);
 
 
 module.exports = router;
