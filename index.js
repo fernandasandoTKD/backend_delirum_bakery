@@ -1,6 +1,7 @@
 /* Importación de express, mongoose, y cors */
 const express = require('express');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 const cors = require('cors'); // Importa cors
 const port = process.env.PORT || 3900;
 
@@ -13,6 +14,9 @@ const shoppingCarRoutes = require('./src/routes/cart');
 
 /* Sinónimo para llamar a express */
 const app = express();
+// Middleware para manejar cookies
+app.use(cookieParser());  // Usar cookie-parser
+
 
 /* Configuración de CORS */
 app.use(cors({
