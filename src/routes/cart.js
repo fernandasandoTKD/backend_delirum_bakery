@@ -1,8 +1,11 @@
 const express = require('express');
 const { getCart, addToCart, removeFromCart, clearCart  } = require('../controllers/shoppingCarController');
+const { authenticate } = require('../middlewares/auth');
 const  verifyToken = require('../middlewares/auth');
 
 const router = express.Router();
+const cardController =require('../controllers/shoppingCarController');
+
 
 router.get('/mycart', getCart);
 router.get('/usermycart',verifyToken, getCart);

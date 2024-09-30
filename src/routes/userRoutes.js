@@ -13,7 +13,7 @@ router.get('/', userController.getUsers);
 router.get('/:id', userController.getUserById);
 
 // Ruta para actualizar un usuario por ID
-router.put('/:id', userController.updateUser);
+router.put('/:id', ensureAuth, userController.updateUser);
 
 // Ruta para eliminar un usuario por ID
 router.delete('/:id', userController.deleteUser);
