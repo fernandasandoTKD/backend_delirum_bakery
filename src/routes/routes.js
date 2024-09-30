@@ -17,9 +17,8 @@ const cart =require('./cart'); */
 // Definir las rutas para la API
 router.use('/auth', authRoutes);     
 router.use('/users', usersRoutes);
-router.use('/blogpost', postRoutes);
 router.use('/author', authorRoutes);
-
+router.use('/post', postRoutes);
 /* router.use('/categories', categories);
 router.use('/products', products);
 router.use('/cart', cart);  */        

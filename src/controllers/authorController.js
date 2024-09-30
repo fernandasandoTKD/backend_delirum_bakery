@@ -83,114 +83,125 @@ const loginAuthor = async (req, res, next ) => {
 const getAuthor = async (req, res, next ) => {
     try {
         const {id} = req.params;
-        const author = await Author.findbyId(id).select ('-password');
-        if (!author){
-            return next (new HttpError("author not found" , 404)) 
+        const author = await Author.findById(id).select('-password');
+        if(!author) {
+            return next(new HttpError("author not found" , 404)) 
         }
         res.status(200).json(author);
 
 
     } catch (error) {
-        return next (new HttpError (error))
+        return next(new HttpError(error))
     }
 }
 
 /* Change Author Avatar (profile picture) */
 // POST : api/author/change-avatar
-// PROTECTED 
-const changeAvatar = async (req, res, next ) => {
+// PROTECTED
+const changeAvatar = async (req, res, next) => {
+    
     try {
-        if (!req.files.avatar){
-            return next (new HttpError ("Please choose an image." , 422))
+        if(!req.files.avatar) {
+            return next(new HttpError("Please choose an image.", 422))
         }
 
-        //find author from database 
-        const author = await Author.findById (req.author.id)
-        // delete old avatar if exists 
-        if (author.avatar){
-            fs.unlink (path.join(__dirname, '..', 'uploads', author.avatar), (err) =>{
-                if (err) {
-                    return next (new HttpError(err) )
+        //find author from database
+        const author = await Author.findById(req.author.id)
+        console.log(author)
+        // delete old avatar if exists
+        if(author.avatar) {
+            fs.unlink(path.join(__dirname, '..', 'uploads', author.avatar), (err) => {
+                if(err) {
+                    return next(new HttpError(err))
+                 
                 }
             })
         }
         const {avatar} = req.files;
-        //check file size 
-        if (avatar.size > 500000) {
+        
+        //check file size
+        if(avatar.size > 500000) {
             return next(new HttpError("Profile picture too big. Should be less than 500kb"), 422)
         }
+
         let fileName;
         fileName = avatar.name;
-        let splittedFilename = fileName.split ('.')
-        let newFilename = splittedFilename[0] + uuid () + '.' + splittedFilename[splittedFilename.length - 1]
-        avatar.mv (path.join (__dirname, '..', 'uploads', newFilename), async (err) =>{
-            if (err){
+        let splittedFilename = fileName.split('.')
+        let newFilename = splittedFilename[0] + uuid() + '.' + splittedFilename[splittedFilename.length - 1]
+        avatar.mv(path.join(__dirname, '..', 'uploads', newFilename), async (err) => {
+            if(err) {
                 return next(new HttpError(err))
             }
 
-            const updatedAvatar = await Author.findByIdAndUpdate(req.author.id, {avatar: newFilename}, {new:true} )
-            if (!updatedAvatar) {
-                return next (new HttpError ("Avatar couldn't be changed." , 422))
+            const updatedAvatar = await Author.findByIdAndUpdate(req.author.id, {avatar: newFilename}, {new: true})
+            if(!updatedAvatar) {
+                return next(new HttpError("Avatar couldn't be changed." , 422))
             }
             res.status(200).json(updatedAvatar)
         })
-    }catch (error) {
-        return next (new HttpError (error))
+    } catch (error) {
+        return next(new HttpError(error))
     }
 }
 
 /* Edit Author Details  (from profile) */
 // POST : api/author/edit-author
 // PROTECTED 
-const editAuthor = async (req, res, next ) => {
+const editAuthor = async (req, res, next) => {
+    
     try {
         const {name, email, currentPassword, newPassword, confirmNewPassword} = req.body;
-        if (!name || !email || !currentPassword || !newPassword) {
-            return next (new HttpError("Fill in in all fields." , 422))
+        if(!name || !email || !currentPassword || !newPassword) {
+            return next(new HttpError("Fill in in all fields.", 422))
+        }
+        // Verificar si req.author está definido
+        if (!req.author || !req.author.id) {
+            return next(new HttpError("Author not authenticated", 401));
         }
         //get author from database
-        const author = await Author.findByID (req.author.id);
-        if (!author) {
-            return next (new HttpError ("Author not found", 403))
+        const author = await Author.findById(req.author.id);
+        if(!author) {
+            return next(new HttpError("Author not found", 403))
         }
+        
         // make sure new email doesn't already exist 
-        const emailExists = await Author.findOne ({email});
-        if (emailExists && (emailExists._id != req.user,id)) {
-            return next (new HttpError ("Email already exists.",422 ))
+        const emailExist = await Author.findOne({email});
+        if(emailExist && (emailExist._id != req.author.id)) {
+            return next(new HttpError("Email already exist.", 422 ))
+            
         }
         //Compare current password to db password
-        const validateAuthorPassword = await bcrypt. compare (currrentPassword, author.password);
-        if (!validateAuthorPassword) {
-            return next( new HttpError ("Invalid current password", 422 ))
+        const validateAuthorPassword = await bcrypt.compare(currentPassword, author.password);
+        if(!validateAuthorPassword) {
+            return next(new HttpError("Invalid current password", 422 ))
         }
-        //Compare new passwords 
-        if (newPassword !== confirmNewPassword){
-            return next (new HttpError ("New passwords do not match", 422))
+        //Compare new passwords
+        if(newPassword !== confirmNewPassword) {
+            return next(new HttpError("New passwords do not match", 422))
         }
 
         //hash new password 
-        const salt = await bcrypt.genSalt (10)
+        const salt = await bcrypt.genSalt(10)
         const hash = await bcrypt.hash(newPassword, salt);
 
         //update author info database
-        const newInfo = await  Author.findByIdAndUpdate (req.author.id, {name, email, password: hash}, {new:true})
-        req.status(200).json (newInfo)
-
+        const newInfo = await  Author.findByIdAndUpdate(req.author.id, {name, email, password: hash}, {new: true})
+        res.status(200).json(newInfo)
     } catch (error) {
-        return next (new HttpError(error))
+        return next(new HttpError(error))
     }
 }
 
 /* Get Authors  */
 // POST : api/authors/authorsuser
 // UNPROTECTED 
-const getAuthors_User = async (req, res, next ) => {
+const getAuthors = async (req, res, next ) => {
     try {
-        const authors_user = await Author.find().select('-password ');
-        res.json (authors_user);
+        const authors = await Author.find().select('-password');
+        res.json (authors);
     } catch (error) {
-        return next (new HttpError (error))
+        return next(new HttpError(error))
     }
 }
 
-module.exports ={registerAuthor , loginAuthor , getAuthor , changeAvatar, editAuthor, getAuthors_User }
+module.exports = {registerAuthor , loginAuthor , getAuthor , changeAvatar, editAuthor, getAuthors}
