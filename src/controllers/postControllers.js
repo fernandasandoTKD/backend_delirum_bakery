@@ -116,7 +116,7 @@ const editPost = async (req,res, next ) => {
         let newFilename;
         let updatedPost;
         const postId = req.params.id;
-        let {title, category, description} =req.body;
+        let {title, category, description} = req.body;
    
         
         if(!title || !category || description.length < 12) {
@@ -127,33 +127,32 @@ const editPost = async (req,res, next ) => {
         } else {
             //get old post from database
             const oldPost = await Post.findById(postId);
-            if( req.user.id == oldPost.creator) {
+            if(req.user.id == oldPost.creator) {
                 if(!req.files) {
-                    updatePost = await Post.findByIdAndUpdate (postId, {title, category, description , thumbnail: newFilename}, {new:true})
+                    updatePost = await Post.findByIdAndUpdate (postId, {title, category, description} ,  {new:true})
                 } else {
                     //delete old thumbnail from upload
                     fs.unlink(path.join(__dirname, '..', 'uploads', oldPost.thumbnail), async (err) => {
                         if (err) {
                             return next(new HttpError(err))
                         }
-
                     })
                     //upload new thumbnail
                     const {thumbnail} = req.files;
-                    //check file size 
+                    //check file size
                     if(thumbnail.size > 2000000) {
                         return next(new HttpError("Thumbnail too big. Should be less than 2mb"))
                     }
                     fileName = thumbnail.name;
                     let splittedFilename = fileName.split ('.')
-                    newFilename= splittedFilename[0] + uuid() + "." + splittedFilename [splittedFilename.length -1]
-                    thumbnail.mv (path.join(__dirname, '..', 'uploads' , newFilename), async (err) => {
+                    newFilename = splittedFilename[0] + uuid() + "." + splittedFilename [splittedFilename.length -1]
+                    thumbnail.mv(path.join(__dirname, '..', 'uploads' , newFilename), async (err) => {
                         if(err) {
                             return next(new HttpError(err))
                         }
                     })
 
-                    updatedPost = await Post.findByIdAndUpdate(postId, {title, category, description , thumbnail: newFilename}, {new: true })
+                    updatedPost = await Post.findByIdAndUpdate(postId, {title, category, description, thumbnail: newFilename}, {new: true })
        
         }
 

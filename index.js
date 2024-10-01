@@ -15,7 +15,7 @@ const productCategoryRoutes = require('./src/routes/categories');
 const productRoutes = require('./src/routes/products');
 const shoppingCarRoutes = require('./src/routes/cart');
 
-const routes = require('./src/routes/routes');
+
 require('dotenv').config();
 //const {notFound, errorHandler} =require ('./middleware/errorMiddleware')
 /* Sinónimo para llamar a express */

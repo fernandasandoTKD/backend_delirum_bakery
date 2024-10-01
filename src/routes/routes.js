@@ -7,7 +7,6 @@ const usersRoutes =require('./userRoutes')
 const postRoutes = require('./postRoutes');
 const authorRoutes = require ('./authorRoutes');
 const classRoutes = require('./classRoutes');
-
 const categories = require('./categories');
 const products = require('./products');
 const cart = require('./cart');
