@@ -4,7 +4,7 @@ const path = require ('path')
 const fs = require ('fs')
 const {v4: uuid} = require('uuid')
 const HttpError = require ( '../models/error')
-
+const User = require('../models/user');
 
 
 // Create a Post
@@ -12,8 +12,12 @@ const HttpError = require ( '../models/error')
 //Protected
 
 const createPost = async (req,res, next ) => {
+  
     try{
-       
+        const userId = req.userId || null;
+        const user = await User.findById(userId);
+        
+
         let {title, category, description} = req.body;
         if(!title || !category || !description || !req.files) {
             return next(new HttpError("Fill in all fields and choose thumbnail.", 422))
@@ -30,14 +34,16 @@ const createPost = async (req,res, next ) => {
             if(err) {
                 return next(new HttpError(err))
             } else {
-                const newPost = await Post.create({title, category, description, thumbnail: newFilename, creator: req.author.id})
+                const newPost = await Post.create({title, category, description, thumbnail: newFilename, creator: req.userId})
                 if(!newPost) {
                     return next(new HttpError("Post couldn't be create." , 422))
                 }
                 //find author and increase post count by 1
-                const currentAuthor = await  Author.findById(req.author.id);
+                
+                const currentAuthor = await Author.findOne({ email:user.email });
+                console.log(currentAuthor)
                 const authorPostCount = currentAuthor.posts + 1;
-                await Author.findByIdAndUpdate(req.author.id, {posts: authorPostCount})
+                await Author.findByIdAndUpdate(currentAuthor._id, {posts: authorPostCount})
 
                 res.status(201).json(newPost)
             }

@@ -1,5 +1,7 @@
 const User = require('../models/user');
 const  bcrypt =require('bcrypt');
+const bcryptjs = require ('bcryptjs');
+const Author = require ('../models/author');
 
 // Crear un nuevo usuario
 exports.createUser = async (req, res) => {
@@ -24,6 +26,11 @@ exports.createUser = async (req, res) => {
 
         // Guardar el usuario en la base de datos
         const savedUser = await newUser.save();
+        if (role === "admin"){
+            const salt = await bcryptjs.genSalt (10) 
+            const hashedPass = await bcryptjs.hash (password, salt);
+            const newAuthor = await Author.create ({username, email, password: hashedPass})
+        }
         res.status(201).json(savedUser);
     } catch (error) {
         res.status(500).json({ message: 'Error al crear el usuario', error: error.message });
