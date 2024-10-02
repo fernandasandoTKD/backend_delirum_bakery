@@ -31,7 +31,7 @@ const port = process.env.PORT || 3900;
 /* Configuración de CORS */
 app.use(cors({
     origin: '*', // Puedes especificar un dominio en lugar de * para mayor seguridad
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH' , 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
@@ -47,7 +47,7 @@ app.use('/uploads', express.static(__dirname + '/uploads'));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json({extended: true}))
-app.use(cors({credentials:true, origin: "http://localhost:3900"}))
+app.use(cors({credentials:true, origin: "http://localhost:3900" }))
 /* Habilitar puesto de escucha */
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

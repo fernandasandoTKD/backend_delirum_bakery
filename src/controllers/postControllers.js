@@ -41,7 +41,7 @@ const createPost = async (req,res, next ) => {
                 //find author and increase post count by 1
                 
                 const currentAuthor = await Author.findOne({ email:user.email });
-                console.log(currentAuthor)
+                
                 const authorPostCount = currentAuthor.posts + 1;
                 await Author.findByIdAndUpdate(currentAuthor._id, {posts: authorPostCount})
 
