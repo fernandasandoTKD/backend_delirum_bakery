@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.JWT_SECRET || "mysecretkey";
 
 const verifyToken = (req, res, next) => {
+  console.log("middleware")
   
   const authHeader = req.headers["authorization"];
   if (!authHeader) {

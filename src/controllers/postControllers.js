@@ -134,6 +134,8 @@ const getAuthorPosts = async (req, res, next) => {
 
 const editPost = async (req,res, next ) => {
     try {
+        const userId = req.userId || null;
+        const user = await User.findById(userId);
         let fileName;
         let newFilename;
         let updatedPost;
@@ -149,7 +151,7 @@ const editPost = async (req,res, next ) => {
         } else {
             //get old post from database
             const oldPost = await Post.findById(postId);
-            if(req.user.id == oldPost.creator) {
+            if(userId == oldPost.creator) {
                 if(!req.files) {
                     updatePost = await Post.findByIdAndUpdate (postId, {title, category, description} ,  {new:true})
                 } else {
@@ -194,14 +196,19 @@ const editPost = async (req,res, next ) => {
 //protected 
 
 const deletePost = async (req,res, next ) =>{
+    console.log("delete")
     try {
+        const userId = req.userId || null;
+        const user = await User.findById(userId);
+        
         const postId =req.params.id;
         if(!postId) {
             return next(new HttpError("Post unavailable.",400))
         }
         const post = await Post.findById(postId);
         const fileName = post?.thumbnail;
-        if (req.author.id == post.creator)  {
+        
+        if (userId == post.creator)  {
         //delete thumbnail from uploads folder
         fs.unlink(path.join(__dirname, '..', 'uploads', fileName), async (err) => {
             if(err) {
@@ -209,9 +216,11 @@ const deletePost = async (req,res, next ) =>{
             } else {
                     await Post.findByIdAndDelete(postId);
                     //Find auhotr and reduce post count by 1
-                    const currentAuthor = await Author.findById(req.author.id);
+                    const currentAuthor = await Author.findOne({ email:user.email });
+                    console.log(currentAuthor)
                     const authorPostCount = currentAuthor?.posts -1;
-                    await  Author.findByIdAndUpdate(req.author.id, {posts: authorPostCount})
+                    await Author.findByIdAndUpdate(currentAuthor._id, {posts: authorPostCount})
+                    
                     res.json(`Post ${postId} deleted succesfully.`)
             }
         })
@@ -221,7 +230,7 @@ const deletePost = async (req,res, next ) =>{
     } 
         
     } catch (error) {
-        return next(new HttpError(err))
+        return next(new HttpError(error))
         
     }
 }
