@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.JWT_SECRET || "mysecretkey";
 
 const verifyToken = (req, res, next) => {
-  console.log("gatitomiddleare", req)
+  
   const authHeader = req.headers["authorization"];
   if (!authHeader) {
     return res.status(403).json({ message: "No hay token suministrado" });

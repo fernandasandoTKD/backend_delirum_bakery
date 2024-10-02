@@ -76,10 +76,26 @@ const getPost = async (req,res, next ) =>{
     try {
         const postId= req.params.id;
         const post = await Post.findById(postId);
+        const user = await User.findById(post.creator);
+       
+        post.user = user
+        const response = {
+            _id: post._id,
+            title: post.title,
+            category: post.category,
+            description: post.description,
+            creator: post.creator,
+            thumbnail: post.thumbnail,
+            createdAt: post.createdAt,
+            updatedAt: post.updatedAt,
+            __v: post.__v,
+            user
+        }
+
         if (!post) {
             return next(new HttpError("Post not found", 404))
         }
-        res.status(200).json(post)
+        res.status(200).json(response)
     } catch (error){
         return next(new HttpError (error))
     }
