@@ -3,7 +3,6 @@ const ProductCategory = require('../models/ProductCategory');
 // Listar productos paginados o filtrados por categoría
 const getAllCategories = async (req, res) => {
     const { page = 1, limit = 10, categoryId } = req.query; // Obtener página, límite y categoryId desde la consulta
-    console.log(req);
     try {
         // Crear un filtro si se proporciona un categoryId
         const filter = categoryId ? { category: categoryId } : {};
