@@ -63,33 +63,31 @@ const createProduct = async (req, res) => {
 
 // Listar productos paginados o por categoría
 const listProducts = async (req, res) => {
-    const { page = 1, limit = 10, categoryId } = req.query; // Incluye categoryId en la consulta
+    const { categoryId } = req.query; // Obtener el categoryId desde la consulta si existe
 
     try {
-        // Crea un objeto de filtros
+        // Crear un objeto de filtros
         const filters = {};
         if (categoryId) {
-            filters.category = categoryId; // Filtrar por categoría
+            filters.category = categoryId; // Filtrar por categoría si se proporciona
         }
 
-        const products = await Product.find(filters) // Aplicar filtros aquí
-            .populate('category')
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
+        // Obtener productos aplicando los filtros (sin paginación)
+        const products = await Product.find(filters).populate('category');
 
-        const totalProducts = await Product.countDocuments(filters); // Contar productos filtrados
+        // Contar total de productos filtrados
+        const totalProducts = await Product.countDocuments(filters);
 
         res.json({
             status: 'success',
             total: totalProducts,
-            page: parseInt(page),
-            limit: parseInt(limit),
-            data: products
+            data: products // Enviar los productos sin paginación
         });
     } catch (error) {
         res.status(500).send('Server Error');
     }
 };
+
 
 // Editar un producto
 const updateProduct = async (req, res) => {
