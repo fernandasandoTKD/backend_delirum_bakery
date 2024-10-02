@@ -1,13 +1,15 @@
 const User = require('../models/user');
 const  bcrypt =require('bcrypt');
+const bcryptjs = require ('bcryptjs');
+const Author = require ('../models/author');
 
 // Crear un nuevo usuario
 exports.createUser = async (req, res) => {
+    
     try {
 
-        const passHast = await bcrypt.hash(password, 10)
         const { username, email, password, role } = req.body;
-
+        const passHast = await bcrypt.hash(password, 10)
         // Verificar si el usuario ya existe
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -24,6 +26,11 @@ exports.createUser = async (req, res) => {
 
         // Guardar el usuario en la base de datos
         const savedUser = await newUser.save();
+        if (role === "admin"){
+            const salt = await bcryptjs.genSalt (10) 
+            const hashedPass = await bcryptjs.hash (password, salt);
+            const newAuthor = await Author.create ({username, email, password: hashedPass})
+        }
         res.status(201).json(savedUser);
     } catch (error) {
         res.status(500).json({ message: 'Error al crear el usuario', error: error.message });
@@ -32,6 +39,7 @@ exports.createUser = async (req, res) => {
 
 // Obtener todos los usuarios
 exports.getUsers = async (req, res) => {
+ 
     try {
         const users = await User.find();
         res.status(200).json(users);
