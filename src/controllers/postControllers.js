@@ -140,21 +140,29 @@ const editPost = async (req,res, next ) => {
         let newFilename;
         let updatedPost;
         const postId = req.params.id;
-        let {title, category, description} = req.body;
+        let {title, category, description, thumbnail} = req.body;
    
-        
+        console.log(req.files , "Hola edit")
+        console.log(req.body , "este es el body")
         if(!title || !category || description.length < 12) {
             return next(new HttpError("fill in all fields", 422))
         }
         if(!req.files) {
+            console.log("mensaje 1")
             updatedPost = await Post.findByIdAndUpdate(postId, {title, category, description}, {new:true})
+            console.log("mensaje 1.1")
+            res.status(200).json(updatedPost)
         } else {
+            console.log("mensaje 2")
             //get old post from database
             const oldPost = await Post.findById(postId);
+    
             if(userId == oldPost.creator) {
+                console.log("mensaje 3")
                 if(!req.files) {
                     updatePost = await Post.findByIdAndUpdate (postId, {title, category, description} ,  {new:true})
                 } else { 
+                    console.log("mensaje 4")
                     //delete old thumbnail from upload
                     fs.unlink(path.join(__dirname, '../../uploads', oldPost.thumbnail), async (err) => {
                         if (err) {
@@ -175,7 +183,7 @@ const editPost = async (req,res, next ) => {
                             return next(new HttpError(err))
                         }
                     })
-
+                    console.log("mensaje 5")
                     updatedPost = await Post.findByIdAndUpdate(postId, {title, category, description, thumbnail: newFilename}, {new: true })
        
         }
