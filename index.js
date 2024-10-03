@@ -46,8 +46,8 @@ app.use('/uploads', express.static(__dirname + '/uploads'));
 
 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json({extended: true}))
-app.use(cors({credentials:true, origin: "http://localhost:3900" }))
+app.use(express.json({extended: true}));
+app.use(cors({credentials:true, origin: "http://localhost:3900" }));
 /* Habilitar puesto de escucha */
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
