@@ -7,13 +7,9 @@
 - [Características](#características)
 - [Requisitos](#requisitos)
 - [Instalación](#instalación)
-- [Configuración](#configuración)
-- [Scripts Disponibles](#scripts-disponibles)
-- [Uso](#uso)
-- [API Endpoints](#api-endpoints)
 - [Tecnologías](#tecnologías)
-- [Contribuciones](#contribuciones)
-- [Licencia](#licencia)
+
+
 
 ## Características
 
@@ -39,3 +35,23 @@ Sigue los pasos para instalar y ejecutar el proyecto en tu entorno local:
 
    ```bash
    git clone https://github.com/tuusuario/delirum-bakery.git
+
+
+## Tecnologías
+
+- **Backend:**
+  - [Node.js](https://nodejs.org/)
+  - [Express.js](https://expressjs.com/)
+  - [MongoDB](https://www.mongodb.com/)
+
+- **Autenticación y Seguridad:**
+  - [JWT (JSON Web Tokens)](https://jwt.io/)
+  - [bcryptjs](https://www.npmjs.com/package/bcryptjs)
+
+- **Gestión de Base de Datos:**
+  - [Mongoose](https://mongoosejs.com/) para modelar los datos en MongoDB.
+
+- **Herramientas de Desarrollo:**
+  - [Nodemon](https://nodemon.io/) para recargar automáticamente el servidor en modo desarrollo.
+
+
