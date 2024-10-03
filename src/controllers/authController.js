@@ -47,7 +47,7 @@ exports.registerUser = async (req, res) => {
 
 // Función para iniciar sesión
 exports.loginUser = async (req, res) => {
-  console.log("gatitologinuser",req.body)
+ 
   try {
     const { email, password } = req.body;
 
