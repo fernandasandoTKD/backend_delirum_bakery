@@ -210,7 +210,7 @@ const deletePost = async (req,res, next ) =>{
         
         if (userId == post.creator)  {
         //delete thumbnail from uploads folder
-        fs.unlink(path.join(__dirname, '..', 'uploads', fileName), async (err) => {
+        fs.unlink(path.join(__dirname, '../../uploads', fileName), async (err) => {
             if(err) {
                 return next(new HttpError(err))
             } else {
