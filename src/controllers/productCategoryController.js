@@ -1,14 +1,8 @@
 const ProductCategory = require('../models/ProductCategory');
-const Product = require("../models/Product");
 
 // Listar productos paginados o filtrados por categoría
 const getAllCategories = async (req, res) => {
     const { page = 1, limit = 10, categoryId } = req.query; // Obtener página, límite y categoryId desde la consulta
-
-    // Validación de parámetros
-    const pageNum = Math.max(1, parseInt(page)); // Asegurarse de que la página sea al menos 1
-    const limitNum = Math.max(1, parseInt(limit)); // Asegurarse de que el límite sea al menos 1
-
     try {
         // Crear un filtro si se proporciona un categoryId
         const filter = categoryId ? { category: categoryId } : {};
@@ -121,6 +115,23 @@ const deleteCategory = async (req, res) => {
     }
 };
 
+//Solo categorias
+
+const onlyCategoreries = async (req, res) => {
+    try {
+        const categories = await ProductCategory.find(); // Obtener todas las categorías de la base de datos
+        res.status(200).json({
+            status: 'success',
+            data: categories
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'error',
+            message: error.message
+        });
+    }
+};
 
 
-module.exports = { getAllCategories, createCategory, editCategory, deleteCategory };
+
+module.exports = { getAllCategories, createCategory, editCategory, deleteCategory, onlyCategoreries};
