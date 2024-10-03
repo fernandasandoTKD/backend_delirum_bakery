@@ -57,16 +57,27 @@ const createPost = async (req,res, next ) => {
 //Post : api/posts
 //Unprotected 
 
-const getPosts= async (req,res, next ) =>{
-    
+const getPosts = async (req, res, next) => {
     try {
-        const posts = await Post.find().sort({updatedAt: -1})
-        res.status(200).json(posts)
+        // Obtener todos los posts y ordenarlos
+        const posts = await Post.find().sort({ updatedAt: -1 });
+        
+        // Crear la URL base para las imágenes
+        const baseUrl = `${req.protocol}://${req.get('host')}/uploads/`;
 
+        // Mapear los posts para incluir la URL de la imagen
+        const postsWithImageUrl = posts.map(post => ({
+            ...post.toObject(), // Convertir el post a un objeto plano
+            imageUrl: `${baseUrl}${post.thumbnail}` // Agregar la URL completa de la imagen
+        }));
+
+        // Enviar la respuesta con los posts
+        res.status(200).json(postsWithImageUrl);
     } catch (error) {
-        return next(new HttpError(error))
+        return next(new HttpError(error));
     }
 }
+
 
 // Get sigle Post 
 //Get : api/posts/:id
