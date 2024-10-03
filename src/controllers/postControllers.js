@@ -30,7 +30,7 @@ const createPost = async (req,res, next ) => {
         let fileName = thumbnail.name;
         let splittedFilename = fileName.split('.')
         let newFilename = splittedFilename[0] + uuid() + "."  + splittedFilename[splittedFilename.length -1]
-        thumbnail.mv(path.join(__dirname, '..', '/uploads', newFilename), async (err) => {
+        thumbnail.mv(path.join(__dirname, '../../uploads', newFilename), async (err) => {
             if(err) {
                 return next(new HttpError(err))
             } else {
@@ -154,9 +154,9 @@ const editPost = async (req,res, next ) => {
             if(userId == oldPost.creator) {
                 if(!req.files) {
                     updatePost = await Post.findByIdAndUpdate (postId, {title, category, description} ,  {new:true})
-                } else {
+                } else { 
                     //delete old thumbnail from upload
-                    fs.unlink(path.join(__dirname, '..', 'uploads', oldPost.thumbnail), async (err) => {
+                    fs.unlink(path.join(__dirname, '../../uploads', oldPost.thumbnail), async (err) => {
                         if (err) {
                             return next(new HttpError(err))
                         }
@@ -170,7 +170,7 @@ const editPost = async (req,res, next ) => {
                     fileName = thumbnail.name;
                     let splittedFilename = fileName.split ('.')
                     newFilename = splittedFilename[0] + uuid() + "." + splittedFilename [splittedFilename.length -1]
-                    thumbnail.mv(path.join(__dirname, '..', 'uploads' , newFilename), async (err) => {
+                    thumbnail.mv(path.join(__dirname, '../../uploads' , newFilename), async (err) => {
                         if(err) {
                             return next(new HttpError(err))
                         }
